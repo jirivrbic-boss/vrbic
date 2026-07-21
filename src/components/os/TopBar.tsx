@@ -1,24 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Apple,
-  Battery,
-  Wifi,
-  LogOut,
-} from "lucide-react";
+import { Apple, Battery, Wifi, LogOut } from "lucide-react";
 import { useWindowStore } from "@/store/windowStore";
 import { getApp } from "@/lib/apps";
-
-const MENU_ITEMS = [
-  "Soubor",
-  "Úpravy",
-  "Zobrazení",
-  "Okno",
-  "Nápověda",
-];
+import { useT } from "@/i18n/useT";
+import { useLocaleStore } from "@/store/localeStore";
 
 export function TopBar() {
+  const t = useT();
+  const locale = useLocaleStore((s) => s.locale);
+  const toggleLocale = useLocaleStore((s) => s.toggleLocale);
   const activeWindow = useWindowStore((s) => s.activeWindow);
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
   const lock = useWindowStore((s) => s.lock);
@@ -34,16 +26,12 @@ export function TopBar() {
 
   useEffect(() => {
     if (!appleOpen) return;
-
     const onPointerDown = (e: PointerEvent) => {
-      if (!appleRef.current?.contains(e.target as Node)) {
-        setAppleOpen(false);
-      }
+      if (!appleRef.current?.contains(e.target as Node)) setAppleOpen(false);
     };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setAppleOpen(false);
     };
-
     window.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
     return () => {
@@ -56,10 +44,14 @@ export function TopBar() {
     if (!isUnlocked) setAppleOpen(false);
   }, [isUnlocked]);
 
-  const appName = activeWindow ? getApp(activeWindow).title : "Finder";
+  const appName = activeWindow
+    ? t(getApp(activeWindow).titleKey)
+    : t("topbar.finder");
+
+  const dateLocale = locale === "en" ? "en-GB" : "cs-CZ";
 
   const timeLabel = now
-    ? new Intl.DateTimeFormat("cs-CZ", {
+    ? new Intl.DateTimeFormat(dateLocale, {
         weekday: "short",
         day: "numeric",
         month: "numeric",
@@ -69,14 +61,22 @@ export function TopBar() {
     : "";
 
   const timeShort = now
-    ? new Intl.DateTimeFormat("cs-CZ", {
+    ? new Intl.DateTimeFormat(dateLocale, {
         hour: "2-digit",
         minute: "2-digit",
       }).format(now)
     : "";
 
+  const menuItems = [
+    t("topbar.file"),
+    t("topbar.edit"),
+    t("topbar.view"),
+    t("topbar.window"),
+    t("topbar.help"),
+  ];
+
   return (
-    <header className="pointer-events-auto absolute inset-x-0 top-0 z-[1000] flex h-9 items-center justify-between bg-black/25 px-2 text-[12px] text-white/95 shadow-sm backdrop-blur-2xl sm:h-8 sm:px-3 sm:text-[13px] pt-[env(safe-area-inset-top)]">
+    <header className="pointer-events-auto absolute inset-x-0 top-0 z-[1000] flex h-9 items-center justify-between bg-black/25 px-2 pt-[env(safe-area-inset-top)] text-[12px] text-white/95 shadow-sm backdrop-blur-2xl sm:h-8 sm:px-3 sm:text-[13px]">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <div ref={appleRef} className="relative">
           <button
@@ -97,7 +97,7 @@ export function TopBar() {
           {appleOpen && isUnlocked && (
             <div className="absolute top-[calc(100%+4px)] left-0 z-[1100] min-w-[200px] overflow-hidden rounded-lg border border-white/15 bg-[#2c2c2e]/95 py-1 text-[13px] text-white shadow-2xl backdrop-blur-xl">
               <div className="border-b border-white/10 px-3 py-2 text-[11px] text-white/45">
-                Jiří Vrba · Portfolio OS
+                {t("topbar.portfolio")}
               </div>
               <button
                 type="button"
@@ -108,7 +108,7 @@ export function TopBar() {
                 className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition hover:bg-[#0a84ff] active:bg-[#0a84ff]"
               >
                 <LogOut className="size-3.5 opacity-80" />
-                <span className="flex-1">Odhlásit se</span>
+                <span className="flex-1">{t("topbar.logout")}</span>
               </button>
             </div>
           )}
@@ -116,9 +116,11 @@ export function TopBar() {
 
         {isUnlocked && (
           <>
-            <span className="truncate font-semibold tracking-tight">{appName}</span>
+            <span className="truncate font-semibold tracking-tight">
+              {appName}
+            </span>
             <nav className="hidden items-center gap-3 lg:flex">
-              {MENU_ITEMS.map((item) => (
+              {menuItems.map((item) => (
                 <button
                   key={item}
                   type="button"
@@ -133,7 +135,15 @@ export function TopBar() {
       </div>
 
       <div className="flex shrink-0 items-center gap-2 text-white/90 sm:gap-3">
-        <Battery className="hidden size-3.5 xs:block sm:block" strokeWidth={1.75} />
+        <button
+          type="button"
+          onClick={toggleLocale}
+          title={t("topbar.langTitle")}
+          className="rounded px-1.5 py-0.5 text-[11px] font-bold tracking-wide transition hover:bg-white/15 active:bg-white/20"
+        >
+          {t("topbar.lang")}
+        </button>
+        <Battery className="hidden size-3.5 sm:block" strokeWidth={1.75} />
         <Wifi className="size-3.5" strokeWidth={1.75} />
         <time className="tabular-nums tracking-tight sm:min-w-[7.5rem] sm:text-right">
           <span className="sm:hidden">{timeShort}</span>

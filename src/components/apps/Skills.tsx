@@ -1,207 +1,77 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocale, useT } from "@/i18n/useT";
 
 type Status = "OPTIMAL" | "NOMINAL" | "STABLE" | "FUNCTIONAL" | "ADEQUATE";
 type Tone = "green" | "orange";
 
-interface Skill {
-  name: string;
+interface SkillDef {
+  nameKey?: string;
+  name?: string;
   level: number;
   status: Status;
   rank: string;
   tone: Tone;
 }
 
-interface Category {
+interface CategoryDef {
   id: string;
-  label: string;
-  skills: Skill[];
+  labelKey: string;
+  skills: SkillDef[];
 }
 
-const CATEGORIES: Category[] = [
+const CATEGORY_DEFS: CategoryDef[] = [
   {
     id: "dev",
-    label: "Vývoj",
+    labelKey: "skills.cat.dev",
     skills: [
-      {
-        name: "Next.js",
-        level: 90,
-        status: "OPTIMAL",
-        rank: "ADVANCED RESEARCHER",
-        tone: "green",
-      },
-      {
-        name: "React",
-        level: 88,
-        status: "STABLE",
-        rank: "HAZARDOUS ENVIRONMENT SPECIALIST",
-        tone: "orange",
-      },
-      {
-        name: "Firebase",
-        level: 82,
-        status: "NOMINAL",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "green",
-      },
-      {
-        name: "Tailwind CSS",
-        level: 90,
-        status: "OPTIMAL",
-        rank: "ADVANCED RESEARCHER",
-        tone: "green",
-      },
-      {
-        name: "Vercel",
-        level: 85,
-        status: "NOMINAL",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "green",
-      },
-      {
-        name: "AI-Assisted Programming",
-        level: 92,
-        status: "OPTIMAL",
-        rank: "HAZARDOUS ENVIRONMENT SPECIALIST",
-        tone: "orange",
-      },
+      { name: "Next.js", level: 90, status: "OPTIMAL", rank: "ADVANCED RESEARCHER", tone: "green" },
+      { name: "React", level: 88, status: "STABLE", rank: "HAZARDOUS ENVIRONMENT SPECIALIST", tone: "orange" },
+      { name: "Firebase", level: 82, status: "NOMINAL", rank: "QUALIFIED TECHNICIAN", tone: "green" },
+      { name: "Tailwind CSS", level: 90, status: "OPTIMAL", rank: "ADVANCED RESEARCHER", tone: "green" },
+      { name: "Vercel", level: 85, status: "NOMINAL", rank: "QUALIFIED TECHNICIAN", tone: "green" },
+      { name: "AI-Assisted Programming", level: 92, status: "OPTIMAL", rank: "HAZARDOUS ENVIRONMENT SPECIALIST", tone: "orange" },
     ],
   },
   {
     id: "infra",
-    label: "Infrastruktura",
+    labelKey: "skills.cat.infra",
     skills: [
-      {
-        name: "Správa serverů",
-        level: 75,
-        status: "FUNCTIONAL",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "orange",
-      },
-      {
-        name: "DNS proxy",
-        level: 78,
-        status: "NOMINAL",
-        rank: "ADVANCED RESEARCHER",
-        tone: "green",
-      },
-      {
-        name: "Domény",
-        level: 85,
-        status: "STABLE",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "orange",
-      },
+      { nameKey: "skills.servers", level: 75, status: "FUNCTIONAL", rank: "QUALIFIED TECHNICIAN", tone: "orange" },
+      { name: "DNS proxy", level: 78, status: "NOMINAL", rank: "ADVANCED RESEARCHER", tone: "green" },
+      { nameKey: "skills.domains", level: 85, status: "STABLE", rank: "QUALIFIED TECHNICIAN", tone: "orange" },
     ],
   },
   {
     id: "mgmt",
-    label: "Management",
+    labelKey: "skills.cat.mgmt",
     skills: [
-      {
-        name: "Event management",
-        level: 90,
-        status: "OPTIMAL",
-        rank: "HAZARDOUS ENVIRONMENT SPECIALIST",
-        tone: "green",
-      },
-      {
-        name: "Faceit admin",
-        level: 88,
-        status: "NOMINAL",
-        rank: "ADVANCED RESEARCHER",
-        tone: "green",
-      },
-      {
-        name: "Tvorba herních struktur",
-        level: 85,
-        status: "STABLE",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "orange",
-      },
-      {
-        name: "Produkce live eventů",
-        level: 87,
-        status: "NOMINAL",
-        rank: "HAZARDOUS ENVIRONMENT SPECIALIST",
-        tone: "green",
-      },
+      { name: "Event management", level: 90, status: "OPTIMAL", rank: "HAZARDOUS ENVIRONMENT SPECIALIST", tone: "green" },
+      { name: "Faceit admin", level: 88, status: "NOMINAL", rank: "ADVANCED RESEARCHER", tone: "green" },
+      { nameKey: "skills.gameStructures", level: 85, status: "STABLE", rank: "QUALIFIED TECHNICIAN", tone: "orange" },
+      { nameKey: "skills.liveEvents", level: 87, status: "NOMINAL", rank: "HAZARDOUS ENVIRONMENT SPECIALIST", tone: "green" },
     ],
   },
   {
     id: "design",
-    label: "Design & Video",
+    labelKey: "skills.cat.design",
     skills: [
-      {
-        name: "Adobe Photoshop",
-        level: 88,
-        status: "OPTIMAL",
-        rank: "VISUAL SPECIALIST",
-        tone: "green",
-      },
-      {
-        name: "Adobe Premiere",
-        level: 85,
-        status: "NOMINAL",
-        rank: "MOTION OPERATIVE",
-        tone: "green",
-      },
-      {
-        name: "Adobe After Effects",
-        level: 80,
-        status: "STABLE",
-        rank: "MOTION OPERATIVE",
-        tone: "orange",
-      },
-      {
-        name: "Adobe Lightroom",
-        level: 78,
-        status: "NOMINAL",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "green",
-      },
-      {
-        name: "Adobe Media Encoder",
-        level: 82,
-        status: "STABLE",
-        rank: "QUALIFIED TECHNICIAN",
-        tone: "orange",
-      },
-      {
-        name: "Sony Vegas 17",
-        level: 80,
-        status: "NOMINAL",
-        rank: "MOTION OPERATIVE",
-        tone: "green",
-      },
+      { name: "Adobe Photoshop", level: 88, status: "OPTIMAL", rank: "VISUAL SPECIALIST", tone: "green" },
+      { name: "Adobe Premiere", level: 85, status: "NOMINAL", rank: "MOTION OPERATIVE", tone: "green" },
+      { name: "Adobe After Effects", level: 80, status: "STABLE", rank: "MOTION OPERATIVE", tone: "orange" },
+      { name: "Adobe Lightroom", level: 78, status: "NOMINAL", rank: "QUALIFIED TECHNICIAN", tone: "green" },
+      { name: "Adobe Media Encoder", level: 82, status: "STABLE", rank: "QUALIFIED TECHNICIAN", tone: "orange" },
+      { name: "Sony Vegas 17", level: 80, status: "NOMINAL", rank: "MOTION OPERATIVE", tone: "green" },
     ],
   },
   {
     id: "lang",
-    label: "Jazyky",
+    labelKey: "skills.cat.lang",
     skills: [
-      {
-        name: "Angličtina (Cambridge B2)",
-        level: 80,
-        status: "NOMINAL",
-        rank: "CERTIFIED OPERATIVE",
-        tone: "green",
-      },
-      {
-        name: "Němčina (A2)",
-        level: 45,
-        status: "ADEQUATE",
-        rank: "TRAINEE OPERATIVE",
-        tone: "orange",
-      },
-      {
-        name: "Čeština (Rodilý mluvčí)",
-        level: 100,
-        status: "OPTIMAL",
-        rank: "NATIVE PROTOCOL",
-        tone: "green",
-      },
+      { nameKey: "skills.en", level: 80, status: "NOMINAL", rank: "CERTIFIED OPERATIVE", tone: "green" },
+      { nameKey: "skills.de", level: 45, status: "ADEQUATE", rank: "TRAINEE OPERATIVE", tone: "orange" },
+      { nameKey: "skills.cs", level: 100, status: "OPTIMAL", rank: "NATIVE PROTOCOL", tone: "green" },
     ],
   },
 ];
@@ -233,19 +103,25 @@ function SegmentedBar({ level, tone }: { level: number; tone: Tone }) {
   );
 }
 
-function SkillRow({ skill }: { skill: Skill }) {
+function SkillRow({
+  skill,
+}: {
+  skill: { name: string; level: number; status: Status; rank: string; tone: Tone };
+}) {
   return (
     <div className="rounded border border-white/8 bg-black/25 p-3">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <span
-            className={`size-2.5 rounded-sm ${
+            className={`size-2.5 shrink-0 rounded-sm ${
               skill.tone === "green" ? "bg-lime-400" : "bg-orange-500"
             }`}
           />
-          <span className="text-sm font-semibold text-white">{skill.name}</span>
+          <span className="truncate text-sm font-semibold text-white">
+            {skill.name}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <span
             className={`rounded border px-1.5 py-0.5 text-[9px] font-bold tracking-wider ${STATUS_STYLE[skill.status]}`}
           >
@@ -255,22 +131,25 @@ function SkillRow({ skill }: { skill: Skill }) {
         </div>
       </div>
       <SegmentedBar level={skill.level} tone={skill.tone} />
-      <div className="mt-1.5 flex justify-between text-[9px] uppercase tracking-wider text-white/35">
+      <div className="mt-1.5 flex justify-between gap-2 text-[9px] uppercase tracking-wider text-white/35">
         <span>Proficiency Level</span>
-        <span>{skill.rank}</span>
+        <span className="truncate text-right">{skill.rank}</span>
       </div>
     </div>
   );
 }
 
 export function Skills() {
+  const t = useT();
+  const locale = useLocale();
   const [tab, setTab] = useState("dev");
   const [clock, setClock] = useState("");
 
   useEffect(() => {
+    const dateLocale = locale === "en" ? "en-GB" : "cs-CZ";
     const tick = () =>
       setClock(
-        new Intl.DateTimeFormat("cs-CZ", {
+        new Intl.DateTimeFormat(dateLocale, {
           day: "numeric",
           month: "numeric",
           year: "numeric",
@@ -282,12 +161,28 @@ export function Skills() {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [locale]);
 
-  const active = CATEGORIES.find((c) => c.id === tab) ?? CATEGORIES[0];
+  const categories = useMemo(
+    () =>
+      CATEGORY_DEFS.map((cat) => ({
+        id: cat.id,
+        label: t(cat.labelKey),
+        skills: cat.skills.map((s) => ({
+          name: s.nameKey ? t(s.nameKey) : (s.name ?? ""),
+          level: s.level,
+          status: s.status,
+          rank: s.rank,
+          tone: s.tone,
+        })),
+      })),
+    [t],
+  );
+
+  const active = categories.find((c) => c.id === tab) ?? categories[0];
   const overall = Math.round(
-    CATEGORIES.flatMap((c) => c.skills).reduce((a, s) => a + s.level, 0) /
-      CATEGORIES.flatMap((c) => c.skills).length,
+    categories.flatMap((c) => c.skills).reduce((a, s) => a + s.level, 0) /
+      categories.flatMap((c) => c.skills).length,
   );
 
   return (
@@ -343,7 +238,7 @@ export function Skills() {
       </div>
 
       <div className="flex flex-wrap gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat.id}
             type="button"

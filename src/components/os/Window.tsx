@@ -9,6 +9,7 @@ import {
 import { useWindowStore, type AppId } from "@/store/windowStore";
 import { getApp } from "@/lib/apps";
 import { useIsCompact, useIsPhone } from "@/hooks/useMediaQuery";
+import { useT } from "@/i18n/useT";
 
 interface WindowProps {
   id: AppId;
@@ -29,12 +30,13 @@ export function Window({ id, children }: WindowProps) {
   const maximizeWindow = useWindowStore((s) => s.maximizeWindow);
 
   const app = getApp(id);
+  const t = useT();
   const isActive = activeWindow === id;
   const isMinimized = meta?.isMinimized ?? true;
   const isMaximized = meta?.isMaximized ?? false;
   const forceFull = isCompact;
   const displayMaximized = isMaximized || forceFull;
-  const windowTitle = app.title;
+  const windowTitle = t(app.titleKey);
 
   const stackIndex = openWindows.indexOf(id);
   const initialPos = useMemo(
@@ -107,7 +109,7 @@ export function Window({ id, children }: WindowProps) {
             <div className="z-10 flex items-center gap-2.5 sm:gap-2">
               <button
                 type="button"
-                aria-label="Zavřít"
+                aria-label={t("window.close")}
                 onClick={(e) => {
                   e.stopPropagation();
                   closeWindow(id);
@@ -120,7 +122,7 @@ export function Window({ id, children }: WindowProps) {
               </button>
               <button
                 type="button"
-                aria-label="Minimalizovat"
+                aria-label={t("window.minimize")}
                 onClick={(e) => {
                   e.stopPropagation();
                   minimizeWindow(id);
@@ -133,7 +135,7 @@ export function Window({ id, children }: WindowProps) {
               </button>
               <button
                 type="button"
-                aria-label="Maximalizovat"
+                aria-label={t("window.maximize")}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!forceFull) maximizeWindow(id);

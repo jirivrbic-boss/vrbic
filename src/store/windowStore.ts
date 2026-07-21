@@ -5,6 +5,7 @@ export type AppId =
   | "experience"
   | "skills"
   | "projects"
+  | "contact"
   | "safari"
   | "discord";
 

@@ -2,8 +2,7 @@ import type { AppId } from "@/store/windowStore";
 
 export interface AppDefinition {
   id: AppId;
-  title: string;
-  label: string;
+  titleKey: string;
   defaultSize: { width: number; height: number };
   accent: string;
   showInDock?: boolean;
@@ -12,48 +11,49 @@ export interface AppDefinition {
 export const APPS: AppDefinition[] = [
   {
     id: "about",
-    title: "O mně",
-    label: "O mně",
+    titleKey: "app.about",
     defaultSize: { width: 720, height: 560 },
     accent: "#3b82f6",
     showInDock: true,
   },
   {
     id: "experience",
-    title: "Zkušenosti",
-    label: "Zkušenosti",
+    titleKey: "app.experience",
     defaultSize: { width: 900, height: 620 },
     accent: "#f97316",
     showInDock: true,
   },
   {
     id: "skills",
-    title: "Dovednosti",
-    label: "Dovednosti",
+    titleKey: "app.skills",
     defaultSize: { width: 880, height: 640 },
     accent: "#22c55e",
     showInDock: true,
   },
   {
     id: "projects",
-    title: "Projekty",
-    label: "Projekty",
+    titleKey: "app.projects",
     defaultSize: { width: 860, height: 580 },
     accent: "#22d3ee",
     showInDock: true,
   },
   {
+    id: "contact",
+    titleKey: "app.contact",
+    defaultSize: { width: 440, height: 480 },
+    accent: "#a78bfa",
+    showInDock: true,
+  },
+  {
     id: "safari",
-    title: "Safari",
-    label: "Safari",
+    titleKey: "app.safari",
     defaultSize: { width: 980, height: 680 },
     accent: "#0a84ff",
     showInDock: true,
   },
   {
     id: "discord",
-    title: "Discord",
-    label: "Discord",
+    titleKey: "app.discord",
     defaultSize: { width: 380, height: 420 },
     accent: "#5865F2",
     showInDock: false,

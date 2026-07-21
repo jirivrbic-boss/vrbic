@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useWindowStore } from "@/store/windowStore";
+import { useT, useLocale } from "@/i18n/useT";
 
 const FAKE_PASSWORD = "vrbiic2026";
 
 export function LockScreen() {
   const unlock = useWindowStore((s) => s.unlock);
+  const t = useT();
+  const locale = useLocale();
   const [now, setNow] = useState<Date | null>(null);
   const [password, setPassword] = useState("");
   const [showCaret, setShowCaret] = useState(true);
@@ -68,8 +71,10 @@ export function LockScreen() {
     timersRef.current = [];
   };
 
+  const dateLocale = locale === "en" ? "en-GB" : "cs-CZ";
+
   const dateLabel = now
-    ? new Intl.DateTimeFormat("cs-CZ", {
+    ? new Intl.DateTimeFormat(dateLocale, {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -77,7 +82,7 @@ export function LockScreen() {
     : "";
 
   const timeLabel = now
-    ? new Intl.DateTimeFormat("cs-CZ", {
+    ? new Intl.DateTimeFormat(dateLocale, {
         hour: "2-digit",
         minute: "2-digit",
       }).format(now)
@@ -127,7 +132,7 @@ export function LockScreen() {
               autoFocus
               autoComplete="off"
               spellCheck={false}
-              aria-label="Heslo"
+              aria-label={t("lock.password")}
               inputMode="text"
             />
             {showCaret && (
@@ -136,17 +141,15 @@ export function LockScreen() {
           </div>
           <button
             type="submit"
-            aria-label="Odemknout"
+            aria-label={t("lock.unlock")}
             className="flex size-11 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition hover:bg-white/30 active:bg-white/40 sm:size-9"
           >
             <ArrowRight className="size-4" />
           </button>
         </form>
         <p className="mt-1 text-center text-xs text-white/55">
-          <span className="sm:hidden">Klepni na šipku pro přihlášení</span>
-          <span className="hidden sm:inline">
-            Stiskni Enter nebo šipku pro přihlášení
-          </span>
+          <span className="sm:hidden">{t("lock.hintMobile")}</span>
+          <span className="hidden sm:inline">{t("lock.hintDesktop")}</span>
         </p>
       </div>
     </motion.div>

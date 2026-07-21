@@ -7,17 +7,20 @@ import {
   Code2,
   Compass,
   FolderKanban,
+  Mail,
   UserRound,
 } from "lucide-react";
 import { DOCK_APPS, type AppDefinition } from "@/lib/apps";
 import { useWindowStore, type AppId } from "@/store/windowStore";
 import { useIsCompact } from "@/hooks/useMediaQuery";
+import { useT } from "@/i18n/useT";
 
 const ICONS: Record<AppId, ComponentType<{ className?: string }>> = {
   about: UserRound,
   experience: BriefcaseBusiness,
   skills: Code2,
   projects: FolderKanban,
+  contact: Mail,
   safari: Compass,
   discord: Compass,
 };
@@ -27,6 +30,7 @@ const ICON_COLORS: Record<AppId, string> = {
   experience: "from-orange-400 to-orange-700",
   skills: "from-lime-400 to-emerald-700",
   projects: "from-cyan-300 to-fuchsia-600",
+  contact: "from-violet-400 to-violet-700",
   safari: "from-blue-400 to-blue-700",
   discord: "from-[#5865F2] to-[#404EED]",
 };
@@ -40,11 +44,13 @@ function DockIcon({
   mouseX: ReturnType<typeof useMotionValue<number>>;
   compact: boolean;
 }) {
+  const t = useT();
   const ref = useRef<HTMLButtonElement>(null);
   const openWindows = useWindowStore((s) => s.openWindows);
   const windows = useWindowStore((s) => s.windows);
   const openWindow = useWindowStore((s) => s.openWindow);
   const [hovered, setHovered] = useState(false);
+  const label = t(app.titleKey);
 
   const distance = useTransform(mouseX, (val) => {
     if (compact) return 150;
@@ -68,7 +74,7 @@ function DockIcon({
     <div className="relative flex shrink-0 flex-col items-center">
       {hovered && !compact && (
         <div className="pointer-events-none absolute -top-9 rounded-md bg-black/70 px-2 py-1 text-[11px] text-white backdrop-blur-md">
-          {app.label}
+          {label}
         </div>
       )}
       <motion.button
@@ -79,7 +85,7 @@ function DockIcon({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => openWindow(app.id)}
-        aria-label={app.label}
+        aria-label={label}
       >
         <div
           className={`flex size-full items-center justify-center rounded-[22%] bg-gradient-to-br ${ICON_COLORS[app.id]} shadow-lg shadow-black/30 ring-1 ring-white/25 active:scale-95`}
@@ -96,7 +102,7 @@ function DockIcon({
       </motion.button>
       {compact && (
         <span className="mt-0.5 max-w-[52px] truncate text-[9px] text-white/70">
-          {app.label}
+          {label}
         </span>
       )}
     </div>

@@ -3,130 +3,10 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, X } from "lucide-react";
+import { getProjects, type ProjectItem } from "@/i18n/content";
+import { useLocale, useT } from "@/i18n/useT";
 
-interface Project {
-  id: string;
-  name: string;
-  subtitle: string;
-  description: string;
-  url: string;
-  tech: string[];
-  color: string;
-  glow: string;
-}
-
-const PROJECTS: Project[] = [
-  {
-    id: "bulldogo",
-    name: "Bulldogo.cz",
-    subtitle: "Platforma pro inzerci služeb",
-    description:
-      "Webová aplikace propojující zákazníky s poskytovateli služeb. Inzertní platforma s moderním UI a důrazem na přehledné propojení nabídky a poptávky.",
-    url: "https://bulldogo.cz",
-    tech: ["Next.js", "React", "Vercel"],
-    color: "#f97316",
-    glow: "rgba(249,115,22,0.55)",
-  },
-  {
-    id: "elite-arena",
-    name: "Elite Arena Turnaje",
-    subtitle: "turnaj.elite-arena.cz",
-    description:
-      "Landing a registrační systém pro LAN turnaje CS2 i EA Sports FC v Elite Game Arena Karlovy Vary. Kalendář turnajů, přihlášky a prezentace herního setupu.",
-    url: "https://turnaj.elite-arena.cz",
-    tech: ["Next.js", "Event System", "CS2"],
-    color: "#22d3ee",
-    glow: "rgba(34,211,238,0.55)",
-  },
-  {
-    id: "pension-sunset",
-    name: "Pension Sunset",
-    subtitle: "pensionsunset.com · Mezirolí",
-    description:
-      "Prezentační web penzionu u Karlových Varů — pokoje, wellness, okolí a rezervace. Klidný design laděný k atmosféře Feng Shui ubytování.",
-    url: "https://pensionsunset.com",
-    tech: ["Next.js", "Booking", "Vercel"],
-    color: "#fbbf24",
-    glow: "rgba(251,191,36,0.55)",
-  },
-  {
-    id: "podlahy",
-    name: "Podlahy Cheb",
-    subtitle: "podlahycheb.cz",
-    description:
-      "Produktový katalog a firemní prezentace prodejce podlah. Přehledný výběr sortimentu s důrazem na elegantní produktové stránky.",
-    url: "https://podlahycheb.cz",
-    tech: ["Next.js", "Katalog", "Tailwind"],
-    color: "#a78bfa",
-    glow: "rgba(167,139,250,0.55)",
-  },
-  {
-    id: "ejdry",
-    name: "Ejdry.cz",
-    subtitle: "Firemní prezentace",
-    description:
-      "Profesionální firemní web s čistou strukturou a moderním vizuálem. Prezentace služeb a kontaktů pro B2B i koncové zákazníky.",
-    url: "https://ejdry.cz",
-    tech: ["Next.js", "SEO", "Vercel"],
-    color: "#34d399",
-    glow: "rgba(52,211,153,0.55)",
-  },
-  {
-    id: "extroworld",
-    name: "Extroworld",
-    subtitle: "extroworld.com · Streetwear",
-    description:
-      "Kreativní e-commerce prezentace streetwear značky Extroworld — dropy, shop a budování komunity kolem unikátního a kontroverzního stylu.",
-    url: "https://extroworld.com",
-    tech: ["Next.js", "E-commerce", "Design"],
-    color: "#fb7185",
-    glow: "rgba(251,113,133,0.55)",
-  },
-  {
-    id: "raj-mazlicku",
-    name: "Ráj mazlíčků",
-    subtitle: "Chovatelské potřeby · Karlovarsko",
-    description:
-      "Kompletní web rodinné firmy — pobočky, AkvaTera trhy, věrnostní program Smečka, fotogalerie, aktuality, FAQ a kontakt. Nasazeno na Vercel.",
-    url: "https://rajmazlicku.vercel.app",
-    tech: ["Next.js", "Firebase", "Vercel"],
-    color: "#4ade80",
-    glow: "rgba(74,222,128,0.55)",
-  },
-  {
-    id: "uctarna",
-    name: "Účtárna",
-    subtitle: "uctarna.fun · Prodejní systém",
-    description:
-      "Moderní profesionální prodejní / účetní systém s důrazem na přehlednost a rychlou orientaci. Interní firemní nástroj pro každodenní provoz.",
-    url: "https://www.uctarna.fun",
-    tech: ["Next.js", "Firebase", "Full-stack"],
-    color: "#38bdf8",
-    glow: "rgba(56,189,248,0.55)",
-  },
-  {
-    id: "wloom",
-    name: "Wloom Studio",
-    subtitle: "wloom-seven.vercel.app",
-    description:
-      "Prezentační web digitálního studia Wloom — služby, portfolio projektů a kontakt. Vizuální identita „S námi rozkvetete online“.",
-    url: "https://wloom-seven.vercel.app",
-    tech: ["Next.js", "3D / Motion", "Vercel"],
-    color: "#e879f9",
-    glow: "rgba(232,121,249,0.55)",
-  },
-  {
-    id: "esportarena",
-    name: "EsportArena TSV",
-    subtitle: "Studentský turnaj · Sezóna 4",
-    description:
-      "Web studentského esport turnaje EsportArena TSV — sezónní prezentace, informace o turnaji a registrace pro hráče.",
-    url: "https://esportarena-tsv.vercel.app",
-    tech: ["Next.js", "Esport", "Vercel"],
-    color: "#818cf8",
-    glow: "rgba(129,140,248,0.55)",
-  },
-];
+type Project = ProjectItem;
 
 function ProjectCard({
   project,
@@ -198,6 +78,9 @@ function ProjectCard({
 }
 
 export function Projects() {
+  const t = useT();
+  const locale = useLocale();
+  const projects = getProjects(locale);
   const [selected, setSelected] = useState<Project | null>(null);
 
   return (
@@ -225,14 +108,14 @@ export function Projects() {
             PROJECT_MINTY::
           </h2>
           <p className="mt-1 text-[11px] uppercase tracking-[0.25em] text-fuchsia-400/80">
-            [Portfolio_System_v3.0] · {PROJECTS.length} nodes
+            [Portfolio_System_v3.0] · {projects.length} nodes
           </p>
         </div>
       </div>
 
       <div className="relative z-10 min-h-0 flex-1 overflow-auto px-4 py-4">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {PROJECTS.map((project, i) => (
+          {projects.map((project, i) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -244,7 +127,7 @@ export function Projects() {
       </div>
 
       <p className="relative z-10 pb-3 text-center text-[10px] uppercase tracking-wider text-white/30">
-        Klikni na uzel pro detail a odkaz
+        {t("projects.hint")}
       </p>
 
       <AnimatePresence>
@@ -274,7 +157,7 @@ export function Projects() {
                   type="button"
                   onClick={() => setSelected(null)}
                   className="rounded p-1 text-white/50 transition hover:bg-white/10 hover:text-white"
-                  aria-label="Zavřít"
+                  aria-label={t("projects.close")}
                 >
                   <X className="size-4" />
                 </button>
@@ -315,14 +198,14 @@ export function Projects() {
                     className="flex flex-1 items-center justify-center gap-2 rounded border border-cyan-400/50 py-2 text-xs font-semibold uppercase tracking-wider text-cyan-300 transition hover:bg-cyan-400/10"
                   >
                     <ExternalLink className="size-3.5" />
-                    View_Project
+                    {t("projects.view")}
                   </a>
                   <button
                     type="button"
                     onClick={() => setSelected(null)}
                     className="rounded border border-fuchsia-400/40 px-4 py-2 text-xs uppercase tracking-wider text-fuchsia-300 transition hover:bg-fuchsia-400/10"
                   >
-                    Close
+                    {t("projects.closeBtn")}
                   </button>
                 </div>
               </div>

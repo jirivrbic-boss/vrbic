@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useT } from "@/i18n/useT";
 
 const DISCORD_NICK = "vrbic.";
 const AVATAR_URL =
   "https://api.dicebear.com/9.x/adventurer/svg?seed=vrbic&backgroundColor=5865f2";
 
 export function DiscordProfile() {
+  const t = useT();
   const [copied, setCopied] = useState(false);
 
   const copyNick = async () => {
@@ -16,7 +18,7 @@ export function DiscordProfile() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt("Zkopíruj Discord nick:", DISCORD_NICK);
+      window.prompt(t("discord.prompt"), DISCORD_NICK);
     }
   };
 
@@ -29,7 +31,7 @@ export function DiscordProfile() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={AVATAR_URL}
-            alt="Profilovka Discord"
+            alt={t("discord.alt")}
             className="size-24 rounded-full bg-[#5865F2] object-cover ring-[6px] ring-[#1e1f22]"
           />
           <span className="absolute right-1 bottom-1 size-5 rounded-full border-[3px] border-[#1e1f22] bg-[#23a559]" />
@@ -42,7 +44,7 @@ export function DiscordProfile() {
           {DISCORD_NICK}
         </h1>
         <p className="mt-3 max-w-xs text-center text-sm leading-relaxed text-white/55">
-          Zkopíruj si moje uživatelské jméno a přidej mě na Discordu.
+          {t("discord.hint")}
         </p>
 
         <button
@@ -57,18 +59,18 @@ export function DiscordProfile() {
           {copied ? (
             <>
               <Check className="size-4" />
-              Zkopírováno do schránky
+              {t("discord.copied")}
             </>
           ) : (
             <>
               <Copy className="size-4" />
-              Zkopírovat {DISCORD_NICK}
+              {t("discord.copy")} {DISCORD_NICK}
             </>
           )}
         </button>
 
         <p className="mt-4 text-center text-[11px] text-white/35">
-          Stačí Ctrl/Cmd + V do Discordu
+          {t("discord.paste")}
         </p>
       </div>
     </div>

@@ -13,14 +13,17 @@ import { Skills } from "@/components/apps/Skills";
 import { Projects } from "@/components/apps/Projects";
 import { SafariBrowser } from "@/components/apps/SafariBrowser";
 import { DiscordProfile } from "@/components/apps/DiscordProfile";
+import { Contact } from "@/components/apps/Contact";
 import { DesktopIcons } from "@/components/os/DesktopIcons";
 import { DesktopMarquee } from "@/components/os/DesktopMarquee";
+import { LocaleHydrator } from "@/components/os/LocaleHydrator";
 
 const APP_CONTENT = {
   about: <AboutMe />,
   experience: <Experience />,
   skills: <Skills />,
   projects: <Projects />,
+  contact: <Contact />,
   safari: <SafariBrowser />,
   discord: <DiscordProfile />,
 } as const;
@@ -30,7 +33,8 @@ export function Desktop() {
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden overscroll-none select-none touch-manipulation">
+    <div className="relative h-dvh w-full overflow-hidden overscroll-none touch-manipulation select-none">
+      <LocaleHydrator />
       <Wallpaper />
       <TopBar />
       <DesktopMarquee />

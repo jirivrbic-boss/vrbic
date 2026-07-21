@@ -12,6 +12,7 @@ import {
   Sidebar,
 } from "lucide-react";
 import { useWindowStore } from "@/store/windowStore";
+import { useT } from "@/i18n/useT";
 
 const BLOCKED_HOST_HINTS = [
   "instagram.com",
@@ -43,6 +44,7 @@ function parseDiscordNick(url: string) {
 }
 
 export function SafariBrowser() {
+  const t = useT();
   const safariUrl = useWindowStore((s) => s.safariUrl);
   const safariTitle = useWindowStore((s) => s.safariTitle);
   const openSafari = useWindowStore((s) => s.openSafari);
@@ -95,7 +97,7 @@ export function SafariBrowser() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
-      window.prompt("Zkopíruj Discord nick:", discordNick);
+      window.prompt(t("discord.prompt"), discordNick);
     }
   };
 
@@ -106,7 +108,7 @@ export function SafariBrowser() {
           <button
             type="button"
             className="rounded-md p-2 opacity-40 sm:p-1.5"
-            aria-label="Zpět"
+            aria-label={t("safari.back")}
             disabled
           >
             <ArrowLeft className="size-4" />
@@ -114,7 +116,7 @@ export function SafariBrowser() {
           <button
             type="button"
             className="rounded-md p-2 opacity-40 sm:p-1.5"
-            aria-label="Vpřed"
+            aria-label={t("safari.forward")}
             disabled
           >
             <ArrowRight className="size-4" />
@@ -147,7 +149,7 @@ export function SafariBrowser() {
                 setTimeout(() => setLoading(false), 800);
               }}
               className="rounded p-1 text-white/45 hover:text-white"
-              aria-label="Obnovit"
+              aria-label={t("safari.reload")}
             >
               <RotateCw
                 className={`size-3.5 ${loading ? "animate-spin" : ""}`}
@@ -160,7 +162,7 @@ export function SafariBrowser() {
           <button
             type="button"
             className="rounded-md p-2 hover:bg-white/10 hover:text-white sm:p-1.5"
-            aria-label="Sdílet"
+            aria-label={t("safari.share")}
             onClick={() =>
               navigator.clipboard?.writeText(
                 discordNick ? discordNick : safariUrl,
@@ -172,7 +174,7 @@ export function SafariBrowser() {
           <button
             type="button"
             className="hidden rounded-md p-1.5 hover:bg-white/10 hover:text-white sm:inline-flex"
-            aria-label="Nový tab"
+            aria-label={t("safari.newTab")}
           >
             <Plus className="size-4" />
           </button>
@@ -182,8 +184,8 @@ export function SafariBrowser() {
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md p-2 hover:bg-white/10 hover:text-white sm:p-1.5"
-              aria-label="Otevřít mimo Safari"
-              title="Otevřít v novém okně"
+              aria-label={t("safari.openExternal")}
+              title={t("safari.openExternal")}
             >
               <ExternalLink className="size-4" />
             </a>
@@ -229,7 +231,7 @@ export function SafariBrowser() {
                 V
               </div>
               <p className="text-sm uppercase tracking-wider text-white/50">
-                Discord uživatel
+                {t("safari.discordUser")}
               </p>
               <p className="mt-2 font-mono text-3xl font-bold">{discordNick}</p>
               <button
@@ -237,7 +239,7 @@ export function SafariBrowser() {
                 onClick={() => void copyNick()}
                 className="mt-6 rounded-lg bg-[#5865F2] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#4752c4]"
               >
-                {copied ? "Zkopírováno!" : "Kopírovat nick"}
+                {copied ? t("safari.copied") : t("safari.copyNick")}
               </button>
             </div>
           </div>
@@ -257,8 +259,7 @@ export function SafariBrowser() {
               </div>
 
               <p className="text-sm leading-relaxed text-black/65">
-                Tato stránka neumožňuje přímé vložení do Safari okna. Otevři ji
-                tlačítkem níže — Safari zůstane součástí plochy.
+                {t("safari.blocked")}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
@@ -269,14 +270,14 @@ export function SafariBrowser() {
                   className="inline-flex items-center gap-2 rounded-full bg-[#0a84ff] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0077ed]"
                 >
                   <ExternalLink className="size-4" />
-                  Otevřít {host}
+                  {t("safari.openHost")} {host}
                 </a>
                 <button
                   type="button"
                   onClick={() => navigator.clipboard?.writeText(safariUrl)}
                   className="rounded-full bg-black/5 px-5 py-2.5 text-sm font-medium text-black/70 transition hover:bg-black/10"
                 >
-                  Kopírovat URL
+                  {t("safari.copyUrl")}
                 </button>
               </div>
 
