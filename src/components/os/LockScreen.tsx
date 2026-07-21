@@ -85,16 +85,16 @@ export function LockScreen() {
 
   return (
     <motion.div
-      className="pointer-events-auto absolute inset-0 z-[800] flex flex-col items-center justify-center bg-black/25 backdrop-blur-[3px]"
+      className="pointer-events-auto absolute inset-0 z-[800] flex flex-col items-center justify-center bg-black/25 px-4 backdrop-blur-[3px]"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.04 }}
       transition={{ duration: 0.45 }}
     >
-      <div className="mb-16 text-center text-white drop-shadow-lg">
-        <p className="text-2xl font-medium capitalize tracking-wide sm:text-3xl">
+      <div className="mb-10 text-center text-white drop-shadow-lg sm:mb-16">
+        <p className="text-lg font-medium capitalize tracking-wide sm:text-3xl">
           {dateLabel}
         </p>
-        <p className="mt-1 text-7xl font-semibold tracking-tight sm:text-8xl">
+        <p className="mt-1 text-5xl font-semibold tracking-tight sm:text-8xl">
           {timeLabel}
         </p>
       </div>
@@ -123,14 +123,12 @@ export function LockScreen() {
               onKeyDown={(e) => {
                 if (e.key !== "Enter") stopAutoType();
               }}
-              onFocus={() => {
-                /* keep autofocus; don't stop until user types */
-              }}
-              className="h-9 w-52 rounded-full border border-white/20 bg-black/35 px-4 pr-8 text-sm tracking-[0.25em] text-white outline-none backdrop-blur-md focus:border-white/40 sm:w-64"
+              className="h-11 w-[min(70vw,16rem)] rounded-full border border-white/20 bg-black/35 px-4 pr-8 text-sm tracking-[0.25em] text-white outline-none backdrop-blur-md focus:border-white/40 sm:h-9 sm:w-64"
               autoFocus
               autoComplete="off"
               spellCheck={false}
               aria-label="Heslo"
+              inputMode="text"
             />
             {showCaret && (
               <span className="pointer-events-none absolute top-1/2 right-3.5 size-1.5 -translate-y-1/2 animate-pulse rounded-full bg-white/70" />
@@ -139,13 +137,16 @@ export function LockScreen() {
           <button
             type="submit"
             aria-label="Odemknout"
-            className="flex size-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition hover:bg-white/30"
+            className="flex size-11 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition hover:bg-white/30 active:bg-white/40 sm:size-9"
           >
             <ArrowRight className="size-4" />
           </button>
         </form>
-        <p className="mt-1 text-xs text-white/55">
-          Stiskni Enter nebo šipku pro přihlášení
+        <p className="mt-1 text-center text-xs text-white/55">
+          <span className="sm:hidden">Klepni na šipku pro přihlášení</span>
+          <span className="hidden sm:inline">
+            Stiskni Enter nebo šipku pro přihlášení
+          </span>
         </p>
       </div>
     </motion.div>

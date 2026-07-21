@@ -342,13 +342,13 @@ export function Skills() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-white/10 px-4 py-2">
+      <div className="flex flex-wrap gap-2 overflow-x-auto border-b border-white/10 px-3 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             type="button"
             onClick={() => setTab(cat.id)}
-            className={`rounded border px-3 py-1.5 text-[10px] uppercase tracking-wider transition ${
+            className={`shrink-0 rounded border px-3 py-2 text-[10px] uppercase tracking-wider transition sm:py-1.5 ${
               tab === cat.id
                 ? "border-orange-500 bg-orange-500/15 text-orange-300"
                 : "border-white/15 text-white/50 hover:border-orange-500/40 hover:text-white/80"

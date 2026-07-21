@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { Palette, Swords, Trophy } from "lucide-react";
 import { useWindowStore } from "@/store/windowStore";
+import { useIsCompact } from "@/hooks/useMediaQuery";
 
 type DesktopItem =
   | {
@@ -165,12 +166,14 @@ function DesktopIconButton({
   zIndex,
   onBringFront,
   onMove,
+  draggable,
 }: {
   item: DesktopItem;
   position: { x: number; y: number };
   zIndex: number;
   onBringFront: () => void;
   onMove: (pos: { x: number; y: number }) => void;
+  draggable: boolean;
 }) {
   const [selected, setSelected] = useState(false);
   const openSafari = useWindowStore((s) => s.openSafari);
@@ -192,6 +195,41 @@ function DesktopIconButton({
     }
     openWindow("discord");
   }, [item, openSafari, openWindow]);
+
+  const content = (
+    <div
+      className={`flex w-full flex-col items-center gap-1 rounded-lg p-1.5 outline-none sm:gap-1.5 sm:p-2 ${
+        selected ? "bg-blue-600/35 ring-1 ring-white/25" : "hover:bg-white/10"
+      }`}
+      onBlur={() => setSelected(false)}
+    >
+      <div
+        className={`flex size-11 items-center justify-center rounded-[18%] bg-gradient-to-br sm:size-12 ${item.gradient} shadow-lg shadow-black/40 ring-1 ring-white/25`}
+      >
+        <ItemGlyph icon={item.icon} />
+      </div>
+      <span
+        className={`max-w-full truncate rounded px-1 text-center text-[10px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] sm:text-[11px] ${
+          selected ? "bg-blue-600/90" : ""
+        }`}
+      >
+        {item.label}
+      </span>
+    </div>
+  );
+
+  if (!draggable) {
+    return (
+      <button
+        type="button"
+        onClick={activate}
+        className="pointer-events-auto w-[72px] shrink-0"
+        aria-label={item.label}
+      >
+        {content}
+      </button>
+    );
+  }
 
   return (
     <motion.div
@@ -232,43 +270,17 @@ function DesktopIconButton({
       }}
       tabIndex={0}
       role="button"
-      aria-label={
-        item.kind === "link"
-          ? `${item.label}: ${item.href}`
-          : `Discord: ${item.value}`
-      }
-      title={`${item.label} — klik otevře v Safari`}
+      aria-label={item.label}
+      title={`${item.label} — klik otevře`}
     >
-      <div
-        className={`flex w-full flex-col items-center gap-1.5 rounded-lg p-2 outline-none ${
-          selected ? "bg-blue-600/35 ring-1 ring-white/25" : "hover:bg-white/10"
-        }`}
-        onBlur={() => setSelected(false)}
-      >
-        <div
-          className={`flex size-12 items-center justify-center rounded-[18%] bg-gradient-to-br ${item.gradient} shadow-lg shadow-black/40 ring-1 ring-white/25`}
-        >
-          <ItemGlyph icon={item.icon} />
-        </div>
-        <span
-          className={`max-w-full truncate rounded px-1 text-center text-[11px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)] ${
-            selected ? "bg-blue-600/90" : ""
-          }`}
-        >
-          {item.label}
-        </span>
-        {item.kind === "copy" && (
-          <span className="max-w-full truncate text-[9px] text-white/70 drop-shadow">
-            {item.value}
-          </span>
-        )}
-      </div>
+      {content}
     </motion.div>
   );
 }
 
 export function DesktopIcons() {
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
+  const isCompact = useIsCompact();
   const [positions, setPositions] = useState<Positions | null>(null);
   const [stack, setStack] = useState<string[]>(() => ITEMS.map((i) => i.id));
 
@@ -290,6 +302,26 @@ export function DesktopIcons() {
 
   if (!isUnlocked || !positions) return null;
 
+  if (isCompact) {
+    return (
+      <div className="pointer-events-none absolute inset-x-0 top-9 z-[5] px-2">
+        <div className="pointer-events-auto flex gap-1 overflow-x-auto rounded-2xl border border-white/15 bg-black/25 px-2 py-2 backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {ITEMS.map((item) => (
+            <DesktopIconButton
+              key={item.id}
+              item={item}
+              position={{ x: 0, y: 0 }}
+              zIndex={1}
+              draggable={false}
+              onBringFront={() => undefined}
+              onMove={() => undefined}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pointer-events-none absolute inset-0 top-8 z-[5]">
       {ITEMS.map((item) => (
@@ -298,6 +330,7 @@ export function DesktopIcons() {
           item={item}
           position={positions[item.id] ?? { x: 16, y: 16 }}
           zIndex={10 + stack.indexOf(item.id)}
+          draggable
           onBringFront={() =>
             setStack((prev) => [
               ...prev.filter((id) => id !== item.id),

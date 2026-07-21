@@ -101,11 +101,11 @@ export function SafariBrowser() {
 
   return (
     <div className="flex h-full flex-col bg-[#1c1c1e] text-white">
-      <div className="flex shrink-0 items-center gap-2 border-b border-white/8 bg-[#2c2c2e] px-3 py-2">
-        <div className="flex items-center gap-1 text-white/45">
+      <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-white/8 bg-[#2c2c2e] px-2 py-2 sm:gap-2 sm:px-3">
+        <div className="flex items-center gap-0.5 text-white/45 sm:gap-1">
           <button
             type="button"
-            className="rounded-md p-1.5 opacity-40"
+            className="rounded-md p-2 opacity-40 sm:p-1.5"
             aria-label="Zpět"
             disabled
           >
@@ -113,23 +113,23 @@ export function SafariBrowser() {
           </button>
           <button
             type="button"
-            className="rounded-md p-1.5 opacity-40"
+            className="rounded-md p-2 opacity-40 sm:p-1.5"
             aria-label="Vpřed"
             disabled
           >
             <ArrowRight className="size-4" />
           </button>
-          <Sidebar className="mx-1 hidden size-4 sm:block" />
+          <Sidebar className="mx-1 hidden size-4 md:block" />
         </div>
 
         <form
-          className="flex min-w-0 flex-1 items-center"
+          className="order-last mt-1 flex min-w-0 flex-[1_1_100%] items-center sm:order-none sm:mt-0 sm:flex-1"
           onSubmit={(e) => {
             e.preventDefault();
             navigate(address);
           }}
         >
-          <div className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg bg-[#1c1c1e] px-3 ring-1 ring-white/10">
+          <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg bg-[#1c1c1e] px-3 ring-1 ring-white/10 sm:h-8">
             <Lock className="size-3 shrink-0 text-white/40" />
             <input
               value={address}
@@ -146,7 +146,7 @@ export function SafariBrowser() {
                 setIframeKey((k) => k + 1);
                 setTimeout(() => setLoading(false), 800);
               }}
-              className="rounded p-0.5 text-white/45 hover:text-white"
+              className="rounded p-1 text-white/45 hover:text-white"
               aria-label="Obnovit"
             >
               <RotateCw
@@ -156,10 +156,10 @@ export function SafariBrowser() {
           </div>
         </form>
 
-        <div className="flex items-center gap-1 text-white/45">
+        <div className="ml-auto flex items-center gap-0.5 text-white/45 sm:gap-1">
           <button
             type="button"
-            className="rounded-md p-1.5 hover:bg-white/10 hover:text-white"
+            className="rounded-md p-2 hover:bg-white/10 hover:text-white sm:p-1.5"
             aria-label="Sdílet"
             onClick={() =>
               navigator.clipboard?.writeText(
@@ -171,7 +171,7 @@ export function SafariBrowser() {
           </button>
           <button
             type="button"
-            className="rounded-md p-1.5 hover:bg-white/10 hover:text-white"
+            className="hidden rounded-md p-1.5 hover:bg-white/10 hover:text-white sm:inline-flex"
             aria-label="Nový tab"
           >
             <Plus className="size-4" />
@@ -181,7 +181,7 @@ export function SafariBrowser() {
               href={safariUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md p-1.5 hover:bg-white/10 hover:text-white"
+              className="rounded-md p-2 hover:bg-white/10 hover:text-white sm:p-1.5"
               aria-label="Otevřít mimo Safari"
               title="Otevřít v novém okně"
             >

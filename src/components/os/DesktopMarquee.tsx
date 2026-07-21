@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowStore } from "@/store/windowStore";
+import { useIsCompact } from "@/hooks/useMediaQuery";
 
 interface Rect {
   x: number;
@@ -23,6 +24,7 @@ function normalize(a: { x: number; y: number }, b: { x: number; y: number }): Re
 
 export function DesktopMarquee() {
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
+  const isCompact = useIsCompact();
   const [rect, setRect] = useState<Rect | null>(null);
   const startRef = useRef<{ x: number; y: number } | null>(null);
   const activeRef = useRef(false);
@@ -35,7 +37,7 @@ export function DesktopMarquee() {
   }, []);
 
   useEffect(() => {
-    if (!isUnlocked) {
+    if (!isUnlocked || isCompact) {
       endSelection();
       return;
     }
@@ -61,9 +63,9 @@ export function DesktopMarquee() {
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
     };
-  }, [isUnlocked, endSelection]);
+  }, [isUnlocked, isCompact, endSelection]);
 
-  if (!isUnlocked) return null;
+  if (!isUnlocked || isCompact) return null;
 
   return (
     <div
@@ -71,7 +73,6 @@ export function DesktopMarquee() {
       className="absolute inset-0 top-8 z-[2]"
       onPointerDown={(e) => {
         if (e.button !== 0) return;
-        // Only start when clicking the empty desktop surface itself
         if (e.target !== e.currentTarget) return;
 
         const bounds = e.currentTarget.getBoundingClientRect();

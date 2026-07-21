@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { DOCK_APPS, type AppDefinition } from "@/lib/apps";
 import { useWindowStore, type AppId } from "@/store/windowStore";
+import { useIsCompact } from "@/hooks/useMediaQuery";
 
 const ICONS: Record<AppId, ComponentType<{ className?: string }>> = {
   about: UserRound,
@@ -33,9 +34,11 @@ const ICON_COLORS: Record<AppId, string> = {
 function DockIcon({
   app,
   mouseX,
+  compact,
 }: {
   app: AppDefinition;
   mouseX: ReturnType<typeof useMotionValue<number>>;
+  compact: boolean;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
   const openWindows = useWindowStore((s) => s.openWindows);
@@ -44,12 +47,17 @@ function DockIcon({
   const [hovered, setHovered] = useState(false);
 
   const distance = useTransform(mouseX, (val) => {
+    if (compact) return 150;
     const bounds = ref.current?.getBoundingClientRect();
     if (bounds == null || val === Infinity) return 150;
     return val - (bounds.left + bounds.width / 2);
   });
 
-  const sizeSync = useTransform(distance, [-140, 0, 140], [52, 78, 52]);
+  const sizeSync = useTransform(
+    distance,
+    [-140, 0, 140],
+    compact ? [48, 48, 48] : [52, 78, 52],
+  );
   const size = useSpring(sizeSync, { mass: 0.1, stiffness: 180, damping: 14 });
 
   const isOpen = openWindows.includes(app.id);
@@ -57,8 +65,8 @@ function DockIcon({
   const Icon = ICONS[app.id];
 
   return (
-    <div className="relative flex flex-col items-center">
-      {hovered && (
+    <div className="relative flex shrink-0 flex-col items-center">
+      {hovered && !compact && (
         <div className="pointer-events-none absolute -top-9 rounded-md bg-black/70 px-2 py-1 text-[11px] text-white backdrop-blur-md">
           {app.label}
         </div>
@@ -66,7 +74,7 @@ function DockIcon({
       <motion.button
         ref={ref}
         type="button"
-        style={{ width: size, height: size }}
+        style={compact ? { width: 48, height: 48 } : { width: size, height: size }}
         className="relative flex items-center justify-center"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -74,7 +82,7 @@ function DockIcon({
         aria-label={app.label}
       >
         <div
-          className={`flex size-full items-center justify-center rounded-[22%] bg-gradient-to-br ${ICON_COLORS[app.id]} shadow-lg shadow-black/30 ring-1 ring-white/25`}
+          className={`flex size-full items-center justify-center rounded-[22%] bg-gradient-to-br ${ICON_COLORS[app.id]} shadow-lg shadow-black/30 ring-1 ring-white/25 active:scale-95`}
         >
           <Icon className="size-[46%] text-white drop-shadow" />
         </div>
@@ -86,6 +94,11 @@ function DockIcon({
           />
         )}
       </motion.button>
+      {compact && (
+        <span className="mt-0.5 max-w-[52px] truncate text-[9px] text-white/70">
+          {app.label}
+        </span>
+      )}
     </div>
   );
 }
@@ -93,21 +106,29 @@ function DockIcon({
 export function Dock() {
   const mouseX = useMotionValue(Infinity);
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
+  const isCompact = useIsCompact();
 
   if (!isUnlocked) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-3 z-[900] flex justify-center px-3">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[900] flex justify-center px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:bottom-3 sm:px-3">
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 24, delay: 0.15 }}
-        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseMove={(e) => {
+          if (!isCompact) mouseX.set(e.pageX);
+        }}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="pointer-events-auto flex items-end gap-2 rounded-2xl border border-white/20 bg-white/15 px-3 py-2 shadow-2xl backdrop-blur-2xl"
+        className="pointer-events-auto flex max-w-[100vw] items-end gap-1.5 overflow-x-auto rounded-2xl border border-white/20 bg-white/15 px-2.5 py-2 shadow-2xl backdrop-blur-2xl sm:gap-2 sm:px-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {DOCK_APPS.map((app) => (
-          <DockIcon key={app.id} app={app} mouseX={mouseX} />
+          <DockIcon
+            key={app.id}
+            app={app}
+            mouseX={mouseX}
+            compact={isCompact}
+          />
         ))}
       </motion.div>
     </div>

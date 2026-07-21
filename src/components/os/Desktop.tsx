@@ -13,7 +13,6 @@ import { Skills } from "@/components/apps/Skills";
 import { Projects } from "@/components/apps/Projects";
 import { SafariBrowser } from "@/components/apps/SafariBrowser";
 import { DiscordProfile } from "@/components/apps/DiscordProfile";
-import { MobileNotice } from "@/components/os/MobileNotice";
 import { DesktopIcons } from "@/components/os/DesktopIcons";
 import { DesktopMarquee } from "@/components/os/DesktopMarquee";
 
@@ -31,7 +30,7 @@ export function Desktop() {
   const isUnlocked = useWindowStore((s) => s.isUnlocked);
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden select-none">
+    <div className="relative h-dvh w-full overflow-hidden overscroll-none select-none touch-manipulation">
       <Wallpaper />
       <TopBar />
       <DesktopMarquee />
@@ -51,7 +50,6 @@ export function Desktop() {
       </div>
 
       <Dock />
-      <MobileNotice />
     </div>
   );
 }

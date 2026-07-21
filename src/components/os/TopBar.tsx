@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Apple,
   Battery,
-  Search,
   Wifi,
-  Blend,
   LogOut,
 } from "lucide-react";
 import { useWindowStore } from "@/store/windowStore";
@@ -70,9 +68,16 @@ export function TopBar() {
       }).format(now)
     : "";
 
+  const timeShort = now
+    ? new Intl.DateTimeFormat("cs-CZ", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(now)
+    : "";
+
   return (
-    <header className="pointer-events-auto absolute inset-x-0 top-0 z-[1000] flex h-8 items-center justify-between bg-black/25 px-3 text-[13px] text-white/95 shadow-sm backdrop-blur-2xl">
-      <div className="flex items-center gap-3">
+    <header className="pointer-events-auto absolute inset-x-0 top-0 z-[1000] flex h-9 items-center justify-between bg-black/25 px-2 text-[12px] text-white/95 shadow-sm backdrop-blur-2xl sm:h-8 sm:px-3 sm:text-[13px] pt-[env(safe-area-inset-top)]">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <div ref={appleRef} className="relative">
           <button
             type="button"
@@ -82,8 +87,8 @@ export function TopBar() {
               if (!isUnlocked) return;
               setAppleOpen((v) => !v);
             }}
-            className={`flex size-5 items-center justify-center rounded transition ${
-              appleOpen ? "bg-white/20" : "hover:bg-white/15"
+            className={`flex size-7 items-center justify-center rounded transition sm:size-5 ${
+              appleOpen ? "bg-white/20" : "hover:bg-white/15 active:bg-white/20"
             } ${isUnlocked ? "cursor-pointer" : "cursor-default"}`}
           >
             <Apple className="size-3.5 fill-white" strokeWidth={0} />
@@ -100,11 +105,10 @@ export function TopBar() {
                   setAppleOpen(false);
                   lock();
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left transition hover:bg-[#0a84ff]"
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition hover:bg-[#0a84ff] active:bg-[#0a84ff]"
               >
                 <LogOut className="size-3.5 opacity-80" />
                 <span className="flex-1">Odhlásit se</span>
-                <span className="text-[11px] text-white/40">⏎</span>
               </button>
             </div>
           )}
@@ -112,8 +116,8 @@ export function TopBar() {
 
         {isUnlocked && (
           <>
-            <span className="font-semibold tracking-tight">{appName}</span>
-            <nav className="hidden items-center gap-3 md:flex">
+            <span className="truncate font-semibold tracking-tight">{appName}</span>
+            <nav className="hidden items-center gap-3 lg:flex">
               {MENU_ITEMS.map((item) => (
                 <button
                   key={item}
@@ -128,14 +132,12 @@ export function TopBar() {
         )}
       </div>
 
-      <div className="flex items-center gap-3 text-white/90">
-        <Blend className="hidden size-3.5 sm:block" strokeWidth={1.75} />
-        <span className="hidden text-[12px] sm:inline">100%</span>
-        <Battery className="size-3.5" strokeWidth={1.75} />
+      <div className="flex shrink-0 items-center gap-2 text-white/90 sm:gap-3">
+        <Battery className="hidden size-3.5 xs:block sm:block" strokeWidth={1.75} />
         <Wifi className="size-3.5" strokeWidth={1.75} />
-        <Search className="size-3.5" strokeWidth={1.75} />
-        <time className="min-w-[7.5rem] text-right tabular-nums tracking-tight">
-          {timeLabel}
+        <time className="tabular-nums tracking-tight sm:min-w-[7.5rem] sm:text-right">
+          <span className="sm:hidden">{timeShort}</span>
+          <span className="hidden sm:inline">{timeLabel}</span>
         </time>
       </div>
     </header>
